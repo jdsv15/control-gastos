@@ -1,0 +1,183 @@
+/* 1. VARIABLES Y RESET GLOBAL */
+:root {
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+
+    color-scheme: light dark;
+    color: rgba(255, 255, 255, 0.87);
+    background-color: #242424;
+
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    /* Sombra estándar para tarjetas y botones */
+    --box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+}
+
+* {
+    box-sizing: border-box;
+    /* Manejo intuitivo del modelo de caja */
+}
+
+/* 2. ESTRUCTURA Y LAYOUT */
+body {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    place-items: center;
+    /* Centrado horizontal y vertical */
+    min-width: 320px;
+    min-height: 100vh;
+}
+
+#root {
+    width: 100%;
+    max-width: 400px;
+    /* Ancho máximo estilo móvil */
+    margin: 0 auto;
+    padding: 2rem;
+    text-align: center;
+}
+
+/* 3. TIPOGRAFÍA */
+h1 {
+    margin-bottom: 20px;
+    font-size: 3.2em;
+    line-height: 1.1;
+}
+
+h3 {
+    border-bottom: 1px solid #bbb;
+    padding-bottom: 10px;
+    margin: 40px 0 10px;
+}
+
+h4 {
+    margin: 0;
+    text-transform: uppercase;
+}
+
+a {
+    font-weight: 500;
+    color: #646cff;
+    text-decoration: inherit;
+}
+
+a:hover {
+    color: #535bf2;
+}
+
+/* 4. COMPONENTES DE FORMULARIO */
+.form-control {
+    margin: 10px 0;
+    text-align: left;
+}
+
+.form-control label {
+    display: inline-block;
+    margin: 10px 0;
+}
+
+.form-control input {
+    border: 1px solid #dedede;
+    border-radius: 2px;
+    display: block;
+    font-size: 16px;
+    padding: 10px;
+    width: 100%;
+    background-color: #fff;
+    color: #000;
+    box-sizing: border-box;
+}
+
+/* 5. BOTONES */
+button {
+    border-radius: 8px;
+    border: 1px solid transparent;
+    padding: 0.6em 1.2em;
+    font-size: 1em;
+    font-weight: 500;
+    font-family: inherit;
+    background-color: #1a1a1a;
+    cursor: pointer;
+    transition: border-color 0.25s, background-color 0.3s ease;
+}
+
+button:hover {
+    border-color: #646cff;
+}
+
+button:focus,
+button:focus-visible {
+    outline: 4px auto -webkit-focus-ring-color;
+}
+
+/* Botón Primario de Acción */
+.btn {
+    cursor: pointer;
+    background-color: #003366 !important;
+    /* Azul Navy corporativo */
+    box-shadow: var(--box-shadow);
+    color: #ffffff !important;
+    border: 0;
+    display: block;
+    font-size: 16px;
+    margin: 10px 0 30px;
+    padding: 10px;
+    width: 100%;
+    transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+    background-color: #002244 !important;
+}
+
+/* 6. LISTAS DE TRANSACCIONES */
+.list {
+    list-style-type: none;
+    padding: 0;
+    margin-bottom: 40px;
+}
+
+.list li {
+    background-color: #fff;
+    box-shadow: var(--box-shadow);
+    color: #333;
+    display: flex;
+    /* Flex para alinear texto izquierda y botón derecha */
+    justify-content: space-between;
+    position: relative;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+/* Indicadores visuales de tipo de transacción */
+.list li.plus {
+    border-right: 5px solid #2ecc71;
+    /* Verde ingreso */
+}
+
+.list li.minus {
+    border-right: 5px solid #c0392b;
+    /* Rojo gasto */
+}
+
+/* 7. MEDIA QUERIES (MODO CLARO) */
+@media (prefers-color-scheme: light) {
+    :root {
+        color: #213547;
+        background-color: #ffffff;
+    }
+
+    a:hover {
+        color: #747bff;
+    }
+
+    /* Ajuste de botones default en fondo claro */
+    button:not(.btn) {
+        background-color: #f9f9f9;
+    }
+}

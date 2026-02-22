@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Control de Gastos - Issue #2</title>
+  <style>
+    :root {
+      font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+      line-height: 1.5;
+      font-weight: 400;
+      color-scheme: light dark;
+      color: rgba(255, 255, 255, 0.87);
+      background-color: #242424;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      --box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      place-items: center;
+      min-width: 320px;
+      min-height: 100vh;
+    }
+
+    #root {
+      width: 100%;
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+      font-size: 3.2em;
+      line-height: 1.1;
+    }
+
+    h2 {
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+
+    h3 {
+      border-bottom: 1px solid #bbb;
+      padding-bottom: 10px;
+      margin: 30px 0 10px;
+      font-size: 1.1em;
+    }
+
+    /* ESTILOS DE LA LISTA (HISTORIAL) */
+    .list {
+      list-style-type: none;
+      padding: 0;
+      margin-bottom: 30px;
+    }
+
+    .list li {
+      background-color: #fff;
+      box-shadow: var(--box-shadow);
+      color: #333;
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 2px;
+      font-weight: 500;
+    }
+
+    .list li.plus {
+      border-right: 5px solid #2ecc71;
+    }
+
+    .list li.minus {
+      border-right: 5px solid #c0392b;
+    }
+
+    /* ESTILOS DEL FORMULARIO */
+    .form-control {
+      margin: 10px 0;
+      text-align: left;
+    }
+
+    .form-control label {
+      display: inline-block;
+      margin: 10px 0;
+      font-size: 0.9em;
+    }
+
+    .form-control input {
+      border: 1px solid #dedede;
+      border-radius: 2px;
+      display: block;
+      font-size: 16px;
+      padding: 10px;
+      width: 100%;
+      background-color: #fff;
+      color: #000;
+      box-sizing: border-box;
+    }
+
+    .btn {
+      cursor: pointer;
+      background-color: #2980b9 !important;
+      /* Azul acorde a Issue2.png */
+      box-shadow: var(--box-shadow);
+      color: #ffffff !important;
+      border: 0;
+      display: block;
+      font-size: 16px;
+      margin: 20px 0;
+      padding: 12px;
+      width: 100%;
+      transition: background-color 0.3s ease;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+
+    .btn:hover {
+      background-color: #2471a3 !important;
+    }
+
+    @media (prefers-color-scheme: light) {
+      :root {
+        color: #213547;
+        background-color: #ffffff;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root">
+    <div class="container">
+
+      <!-- BALANCE -->
+      <div id="balance-container">
+        <h2>Tu Balance</h2>
+        <h1 id="balance-amount">$0.00</h1>
+      </div>
+
+      <!-- HISTORIAL (Novedad Issue #2) -->
+      <div id="history-container">
+        <h3>Historial</h3>
+        <ul id="list" class="list">
+          <!-- Las transacciones se insertan aquí -->
+        </ul>
+      </div>
+
+      <!-- FORMULARIO -->
+      <div id="section-summary">
+        <h3>Agregar nueva transacción</h3>
+        <form id="form">
+          <div class="form-control">
+            <label for="text">Descripción de la transacción</label>
+            <input type="text" id="text" placeholder="Ej: Sueldo, Venta, Comida..." required />
+          </div>
+
+          <div class="form-control">
+            <label for="amount">
+              Monto ($) <br />
+              <small>Tip: Usa números positivos para ingresos y negativos para gastos</small>
+            </label>
+            <input type="number" id="amount" placeholder="Introduce cantidad..." required />
+          </div>
+
+          <button class="btn">Agregar transacción</button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const balanceAmount = document.getElementById('balance-amount');
+    const list = document.getElementById('list');
+    const form = document.getElementById('form');
+    const textInput = document.getElementById('text');
+    const amountInput = document.getElementById('amount');
+
+    let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+
+    // Función para renderizar la lista del historial
+    function renderList() {
+      list.innerHTML = '';
+      transactions.forEach(transaction => {
+        const sign = transaction.amount < 0 ? '-' : '+';
+        const item = document.createElement('li');
+
+        // Añadir clase para el borde de color
+        item.classList.add(transaction.amount < 0 ? 'minus' : 'plus');
+
+        item.innerHTML = `
+                ${transaction.text} 
+                <span>${sign}$${Math.abs(transaction.amount).toFixed(2)}</span>
+            `;
+
+        list.appendChild(item);
+      });
+    }
+
+    function updateBalance() {
+      const total = transactions
+        .reduce((acc, item) => (acc += item.amount), 0)
+        .toFixed(2);
+
+      balanceAmount.innerText = `$${total}`;
+    }
+
+    function addTransaction(e) {
+      e.preventDefault();
+
+      const transaction = {
+        id: Math.floor(Math.random() * 100000000),
+        text: textInput.value,
+        amount: +amountInput.value
+      };
+
+      transactions.push(transaction);
+
+      // Actualizar UI y Persistencia
+      updateBalance();
+      renderList();
+      localStorage.setItem('transactions', JSON.stringify(transactions));
+
+      // Limpiar
+      textInput.value = '';
+      amountInput.value = '';
+    }
+
+    function init() {
+      updateBalance();
+      renderList();
+    }
+
+    form.addEventListener('submit', addTransaction);
+    init();
+  </script>
+</body>
+
+</html>
