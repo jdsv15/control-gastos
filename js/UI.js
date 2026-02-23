@@ -14,7 +14,6 @@ class UI {
         const li = document.createElement('li');
         li.className = `list-item ${transaction.amount < 0 ? 'minus' : 'plus'}`;
 
-        // El botón de eliminar llama a App.removeTransaction
         const deleteBtnHTML = `<button class="delete-btn" onclick="App.removeTransaction(${transaction.id})">x</button>`;
 
         li.innerHTML = `
@@ -33,7 +32,15 @@ class UI {
 
         const balanceAmount = document.getElementById('balance-amount');
         balanceAmount.innerText = `$${total.replace('.00', '')}`;
-        balanceAmount.style.color = total < 0 ? '#e74c3c' : '#fff';
+
+        // --- LÓGICA ISSUE 4: COLOR DEL BALANCE Y ALERTA DE PRESUPUESTO ---
+        balanceAmount.style.color = total < 0 ? 'var(--danger-red)' : '#fff';
+
+        const budgetWarning = document.getElementById('budget-warning');
+        if (budgetWarning) {
+            budgetWarning.style.display = total < 0 ? 'block' : 'none';
+        }
+        // -----------------------------------------------------------------
 
         // Actualizar Gráfico
         UI.updateChart(income, expense);
@@ -55,7 +62,7 @@ class UI {
         UI.chartInstance = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: [''], // Etiqueta vacía para barra horizontal única
+                labels: [''], // Etiqueta vacía
                 datasets: [
                     {
                         label: 'Ingresos',
@@ -74,7 +81,7 @@ class UI {
                 ]
             },
             options: {
-                indexAxis: 'y', // Convierte la barra en horizontal
+                indexAxis: 'y', // Barra horizontal
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: {
@@ -88,6 +95,18 @@ class UI {
                 animation: { duration: 500 }
             }
         });
+    }
+
+    // --- LÓGICA ISSUE 4: MENSAJE TEMPORAL DE ÉXITO ---
+    static showAlert(message) {
+        const msgEl = document.getElementById('msg');
+        if (msgEl) {
+            msgEl.innerText = message;
+            // Borrar el mensaje después de 3 segundos
+            setTimeout(() => {
+                msgEl.innerText = '';
+            }, 3000);
+        }
     }
 
     static clearFields() {

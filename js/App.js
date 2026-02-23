@@ -1,35 +1,34 @@
 class App {
     static init() {
-        // 1. Mostrar transacciones al cargar la página
+        // Inicializar vistas
         UI.displayTransactions();
 
-        // 2. Manejo del Formulario
+        // Evento Formulario
         document.getElementById('form').addEventListener('submit', (e) => {
             e.preventDefault();
 
             const text = document.getElementById('text').value;
             const amount = parseFloat(document.getElementById('amount').value);
 
-            // Crear el objeto de la transacción
             const transaction = { id: Date.now(), text, amount };
 
-            // Guardar y actualizar interfaz
+            // Guardar y renderizar
             Store.addTransaction(transaction);
             UI.displayTransactions();
             UI.clearFields();
+
+            // --- LÓGICA ISSUE 4: LLAMAR A LA ALERTA DE ÉXITO ---
+            UI.showAlert('Transacción realizada exitosamente!');
         });
 
-        // 3. Manejo de Pestañas (Navegación)
+        // Navegación de Pestañas
         const tabButtons = document.querySelectorAll('.tab-btn');
         const tabContents = document.querySelectorAll('.tab-content');
 
         tabButtons.forEach(btn => {
             btn.addEventListener('click', () => {
-                // Cambiar clases activas en botones
                 tabButtons.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-
-                // Mostrar la sección correspondiente
                 const target = btn.getAttribute('data-tab');
                 tabContents.forEach(section => {
                     section.style.display = section.id === `section-${target}` ? 'block' : 'none';
@@ -38,12 +37,11 @@ class App {
         });
     }
 
-    // Método estático para ser llamado desde los botones 'x' en la UI
     static removeTransaction(id) {
         Store.removeTransaction(id);
         UI.displayTransactions();
     }
 }
 
-// Iniciar aplicación cuando el DOM termine de cargar
+// Iniciar aplicación
 document.addEventListener('DOMContentLoaded', App.init);
