@@ -5,6 +5,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Control de Gastos</title>
+
+  <!-- Chart.js para gráficos -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <style>
     :root {
       font-family: 'Inter', system-ui, sans-serif;
@@ -23,6 +27,10 @@
       justify-content: center;
     }
 
+    * {
+      box-sizing: border-box;
+    }
+
     #root {
       width: 100%;
       max-width: 500px;
@@ -39,63 +47,104 @@
       text-align: center;
     }
 
-    /* PESTAÑAS (TABS) - Ajustadas para ser compactas y cuadradas */
+    /* 2. PESTAÑAS (TABS) - Diseño fusionado */
     .tabs {
       display: flex;
       justify-content: center;
-      /* Centra los botones */
-      gap: 5px;
-      margin-bottom: 25px;
+      margin: 0 auto 30px auto;
+      width: fit-content;
+      border-radius: 4px;
+      overflow: hidden;
     }
 
     .tab-btn {
-      padding: 10px 12px;
-      border: 1px solid #fff;
-      background: #fff;
+      padding: 10px;
+      border: none;
+      background: #f0f0f0;
       color: #7f8c8d;
       cursor: pointer;
-      font-size: 0.8rem;
-      font-weight: 600;
+      font-size: 0.85rem;
+      font-weight: 700;
       transition: 0.3s;
-      border-radius: 2px;
-      width: 90px;
+      width: 140px;
       height: 45px;
       display: flex;
       align-items: center;
       justify-content: center;
-      line-height: 1.1;
     }
 
     .tab-btn.active {
       background-color: var(--navy-blue);
       color: white;
-      border-color: var(--navy-blue);
     }
 
-    /* BALANCE */
+    /* 3. BALANCE Y GRÁFICO */
     #balance-container h1:first-child {
-      font-size: 1.8rem;
+      font-size: 2rem;
       margin: 0;
       color: #fff;
       font-weight: 700;
     }
 
     #balance-amount {
-      font-size: 3.5rem;
-      margin: 5px 0 25px 0;
+      font-size: 3rem;
+      margin: 10px 0 20px 0;
       font-weight: 700;
     }
 
-    /* LISTA DE HISTORIAL */
+    #chart-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      margin-bottom: 30px;
+    }
+
+    .chart-wrapper {
+      width: 100%;
+      max-width: 300px;
+      height: 30px;
+      margin-bottom: 15px;
+    }
+
+    .chart-legend {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      font-size: 0.8rem;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .legend-color {
+      width: 25px;
+      height: 8px;
+      border-radius: 2px;
+    }
+
+    .legend-income {
+      background-color: var(--success-green);
+    }
+
+    .legend-expense {
+      background-color: var(--danger-red);
+    }
+
+    /* 4. LISTA DE HISTORIAL */
     h3 {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      border-bottom: 1px solid #333;
-      padding-bottom: 5px;
+      font-size: 0.85rem;
+      border-bottom: 1px solid #444;
+      padding-bottom: 10px;
       margin: 20px 0 15px;
       color: #fff;
       font-weight: 700;
+      text-align: center;
     }
 
     .list {
@@ -110,7 +159,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 10px 15px;
+      padding: 12px 15px;
       margin-bottom: 8px;
       border-radius: 1px;
       position: relative;
@@ -126,7 +175,6 @@
       border-right: 5px solid var(--danger-red);
     }
 
-    /* Botón de eliminar (X roja) */
     .delete-btn {
       position: absolute;
       left: -28px;
@@ -135,8 +183,7 @@
       border: none;
       width: 20px;
       height: 20px;
-      border-radius: 4px;
-      /* Cuadrado pequeño con leve redondeo */
+      border-radius: 2px;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -145,7 +192,7 @@
       font-weight: bold;
     }
 
-    /* FORMULARIO */
+    /* 5. FORMULARIO */
     .form-control {
       text-align: left;
       margin-bottom: 15px;
@@ -160,7 +207,7 @@
 
     .form-control input {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       border: 1px solid #dedede;
       border-radius: 2px;
       background: #fff;
@@ -170,7 +217,7 @@
 
     .btn-submit {
       width: 100%;
-      padding: 12px;
+      padding: 14px;
       background-color: var(--navy-blue);
       color: white;
       border: none;
@@ -195,8 +242,8 @@
 
         <!-- COMPONENTE: PESTAÑAS (TABS) -->
         <div class="tabs">
-          <button class="tab-btn active" data-tab="summary">Nueva Transacción</button>
-          <button class="tab-btn" data-tab="history">Historial</button>
+          <button id="tab-summary" class="tab-btn active" data-tab="summary">Nueva Transacción</button>
+          <button id="tab-history" class="tab-btn" data-tab="history">Historial</button>
         </div>
 
         <!-- COMPONENTE: BALANCE -->
@@ -205,99 +252,56 @@
           <h1 id="balance-amount">$0</h1>
         </div>
 
-        <!-- SECCIÓN: HISTORIAL -->
-        <div id="section-history" class="tab-content" style="display: none;">
-          <h3>Historial</h3>
-          <ul id="list" class="list">
-            <!-- Items dinámicos -->
-          </ul>
+        <!-- COMPONENTE: GRÁFICO DE BARRAS HORIZONTAL -->
+        <div id="chart-container">
+          <div class="chart-wrapper">
+            <canvas id="expense-chart"></canvas>
+          </div>
+          <div class="chart-legend">
+            <div class="legend-item">
+              <div class="legend-color legend-income"></div>
+              <span>Ingresos</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color legend-expense"></div>
+              <span>Gastos</span>
+            </div>
+          </div>
         </div>
 
-        <!-- SECCIÓN: FORMULARIO -->
+        <!-- SECCIÓN: FORMULARIO (Nueva Transacción) -->
         <div id="section-summary" class="tab-content">
           <h3>Agregar nueva transacción</h3>
           <form id="form">
             <div class="form-control">
-              <label>Descripción de la transacción</label>
-              <input type="text" id="text" placeholder="Ej: Sueldo, Venta, Comida..." required>
+              <label for="text">Descripción de la transacción</label>
+              <input type="text" id="text" placeholder="Ej: Sueldo, Venta, Comida..." required />
             </div>
+
             <div class="form-control">
-              <label>Monto ($) <br><small style="color: #aaa;">Tip: Usa números positivos para ingresos y negativos para
-                  gastos</small></label>
-              <input type="number" id="amount" placeholder="Introduce cantidad..." step="0.01" required>
+              <label for="amount">Monto ($) <br /><small style="color: #aaa;">Tip: Usa números positivos para ingresos y
+                  negativos para gastos</small></label>
+              <input type="number" id="amount" placeholder="Introduce cantidad..." step="0.01" required />
             </div>
-            <button type="submit" class="btn-submit">Agregar transacción</button>
+            <button class="btn-submit">Realizar transacción</button>
           </form>
+        </div>
+
+        <!-- SECCIÓN: HISTORIAL -->
+        <div id="section-history" class="tab-content" style="display: none;">
+          <h3>Historial</h3>
+          <ul id="list-global" class="list"></ul>
         </div>
 
       </div>
     </div>
   </div>
 
-  <script>
-    // --- LÓGICA CONSOLIDADA ---
-    const balanceDisplay = document.getElementById('balance-amount');
-    const list = document.getElementById('list');
-    const form = document.getElementById('form');
-    const textInput = document.getElementById('text');
-    const amountInput = document.getElementById('amount');
-    const tabButtons = document.querySelectorAll('.tab-btn');
-    const tabContents = document.querySelectorAll('.tab-content');
-
-    let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
-
-    // Navegación
-    tabButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        tabButtons.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const target = btn.getAttribute('data-tab');
-        tabContents.forEach(section => {
-          section.style.display = section.id === `section-${target}` ? 'block' : 'none';
-        });
-      });
-    });
-
-    function updateUI() {
-      list.innerHTML = '';
-      transactions.forEach(t => {
-        const li = document.createElement('li');
-        li.className = `list-item ${t.amount < 0 ? 'minus' : 'plus'}`;
-        li.innerHTML = `
-          <button class="delete-btn" onclick="removeTransaction(${t.id})">x</button>
-          <span>${t.text}</span>
-          <span>${t.amount < 0 ? '-' : '+'}$${Math.abs(t.amount).toFixed(2)}</span>
-        `;
-        list.appendChild(li);
-      });
-
-      const total = transactions.reduce((acc, t) => acc + t.amount, 0).toFixed(2);
-      balanceDisplay.innerText = `$${total.replace('.00', '')}`;
-      balanceDisplay.style.color = total < 0 ? '#e74c3c' : '#fff';
-    }
-
-    function removeTransaction(id) {
-      transactions = transactions.filter(t => t.id !== id);
-      localStorage.setItem('transactions', JSON.stringify(transactions));
-      updateUI();
-    }
-
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const newTransaction = {
-        id: Date.now(),
-        text: textInput.value,
-        amount: parseFloat(amountInput.value)
-      };
-      transactions.push(newTransaction);
-      localStorage.setItem('transactions', JSON.stringify(transactions));
-      textInput.value = '';
-      amountInput.value = '';
-      updateUI();
-    });
-
-    updateUI();
-  </script>
+  <!-- CONEXIÓN CON LOS MÓDULOS JAVASCRIPT -->
+  <!-- Es muy importante mantener este orden de carga -->
+  <script src="js/Store.js"></script>
+  <script src="js/UI.js"></script>
+  <script src="js/App.js"></script>
 </body>
 
 </html>
