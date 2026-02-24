@@ -1,27 +1,37 @@
+// --- Array para guardar transacciones de la sesión actual ---
+let sessionTransactions = [];
+
 class App {
     static init() {
-        // Inicializar vistas
         UI.displayTransactions();
 
-        // Evento Formulario
+        // --- NUEVO: Setear fecha de hoy por defecto ---
+        document.getElementById('date').value = new Date().toISOString().split('T')[0];
+
         document.getElementById('form').addEventListener('submit', (e) => {
             e.preventDefault();
 
             const text = document.getElementById('text').value;
             const amount = parseFloat(document.getElementById('amount').value);
 
-            const transaction = { id: Date.now(), text, amount };
+            // --- NUEVO: Capturar fecha y categoría ---
+            const category = document.getElementById('category').value;
+            const date = document.getElementById('date').value;
 
-            // Guardar y renderizar
+            const transaction = { id: Date.now(), text, amount, category, date };
+
             Store.addTransaction(transaction);
-            UI.displayTransactions();
-            UI.clearFields();
 
-            // --- LÓGICA ISSUE 4: LLAMAR A LA ALERTA DE ÉXITO ---
+            // --- NUEVO: Agregar a la sesión y actualizar vista ---
+            sessionTransactions.push(transaction);
+
+            UI.displayTransactions();
+            UI.displaySessionTransactions(sessionTransactions);
+
+            UI.clearFields();
             UI.showAlert('Transacción realizada exitosamente!');
         });
 
-        // Navegación de Pestañas
         const tabButtons = document.querySelectorAll('.tab-btn');
         const tabContents = document.querySelectorAll('.tab-content');
 
@@ -39,9 +49,13 @@ class App {
 
     static removeTransaction(id) {
         Store.removeTransaction(id);
+
+        // --- NUEVO: Quitar de la sesión actual si se elimina ---
+        sessionTransactions = sessionTransactions.filter(t => t.id !== id);
+
         UI.displayTransactions();
+        UI.displaySessionTransactions(sessionTransactions);
     }
 }
 
-// Iniciar aplicación
 document.addEventListener('DOMContentLoaded', App.init);

@@ -10,16 +10,34 @@ class UI {
         UI.updateValues(transactions);
     }
 
-    static addTransactionToList(transaction, listElement) {
+    // --- NUEVO: Mostrar lista de sesión ---
+    static displaySessionTransactions(sessionData) {
+        const sessionList = document.getElementById('list-session');
+        sessionList.innerHTML = '';
+
+        // allowDelete se pasa como false para que no se puedan borrar desde la sesión temporal
+        sessionData.forEach(t => UI.addTransactionToList(t, sessionList, false));
+    }
+
+    static addTransactionToList(transaction, listElement, allowDelete = true) {
         const li = document.createElement('li');
         li.className = `list-item ${transaction.amount < 0 ? 'minus' : 'plus'}`;
 
-        const deleteBtnHTML = `<button class="delete-btn" onclick="App.removeTransaction(${transaction.id})">x</button>`;
+        const deleteBtnHTML = allowDelete
+            ? `<button class="delete-btn" onclick="App.removeTransaction(${transaction.id})">x</button>`
+            : '';
+
+        // --- NUEVO: Se agregan detalles (categoría y fecha) ---
+        const categoryText = transaction.category ? transaction.category : 'Otros';
+        const dateText = transaction.date ? transaction.date : '';
 
         li.innerHTML = `
       ${deleteBtnHTML}
-      <span>${transaction.text}</span>
-      <span>$${Math.abs(transaction.amount).toFixed(2)}</span>
+      <div class="details">
+        <span>${transaction.text}</span>
+        <small>${categoryText} | ${dateText}</small>
+      </div>
+      <span>${transaction.amount < 0 ? '-' : '+'}$${Math.abs(transaction.amount).toFixed(2)}</span>
     `;
         listElement.appendChild(li);
     }
@@ -32,17 +50,13 @@ class UI {
 
         const balanceAmount = document.getElementById('balance-amount');
         balanceAmount.innerText = `$${total.replace('.00', '')}`;
-
-        // --- LÓGICA ISSUE 4: COLOR DEL BALANCE Y ALERTA DE PRESUPUESTO ---
         balanceAmount.style.color = total < 0 ? 'var(--danger-red)' : '#fff';
 
         const budgetWarning = document.getElementById('budget-warning');
         if (budgetWarning) {
             budgetWarning.style.display = total < 0 ? 'block' : 'none';
         }
-        // -----------------------------------------------------------------
 
-        // Actualizar Gráfico
         UI.updateChart(income, expense);
     }
 
@@ -53,7 +67,6 @@ class UI {
             UI.chartInstance.destroy();
         }
 
-        // Si no hay datos, mostrar barras grises por defecto
         const displayIncome = (income === 0 && expense === 0) ? 1 : income;
         const displayExpense = (income === 0 && expense === 0) ? 1 : expense;
         const colorIncome = (income === 0 && expense === 0) ? '#444' : '#2ecc71';
@@ -62,26 +75,14 @@ class UI {
         UI.chartInstance = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: [''], // Etiqueta vacía
+                labels: [''],
                 datasets: [
-                    {
-                        label: 'Ingresos',
-                        data: [displayIncome],
-                        backgroundColor: colorIncome,
-                        barThickness: 25,
-                        borderWidth: 0
-                    },
-                    {
-                        label: 'Gastos',
-                        data: [displayExpense],
-                        backgroundColor: colorExpense,
-                        barThickness: 25,
-                        borderWidth: 0
-                    }
+                    { data: [displayIncome], backgroundColor: colorIncome, barThickness: 25, borderWidth: 0 },
+                    { data: [displayExpense], backgroundColor: colorExpense, barThickness: 25, borderWidth: 0 }
                 ]
             },
             options: {
-                indexAxis: 'y', // Barra horizontal
+                indexAxis: 'y',
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: {
@@ -97,20 +98,18 @@ class UI {
         });
     }
 
-    // --- LÓGICA ISSUE 4: MENSAJE TEMPORAL DE ÉXITO ---
     static showAlert(message) {
         const msgEl = document.getElementById('msg');
         if (msgEl) {
             msgEl.innerText = message;
-            // Borrar el mensaje después de 3 segundos
-            setTimeout(() => {
-                msgEl.innerText = '';
-            }, 3000);
+            setTimeout(() => msgEl.innerText = '', 3000);
         }
     }
 
     static clearFields() {
         document.getElementById('text').value = '';
         document.getElementById('amount').value = '';
+        // Reseteamos la fecha a hoy
+        document.getElementById('date').value = new Date().toISOString().split('T')[0];
     }
 }

@@ -4,9 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Control de Gastos - Issue 4</title>
+  <title>Control de Gastos - Issue 3</title>
 
-  <!-- Chart.js para gráficos -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
@@ -39,46 +38,64 @@
     .app-wrapper {
       display: flex;
       flex-direction: column;
+      min-height: 100vh;
       width: 100%;
     }
 
     .container {
       padding: 2rem;
       text-align: center;
+      flex: 1;
     }
 
-    /* 2. PESTAÑAS (TABS) */
+    /* =========================================
+       2. PESTAÑAS (TABS) - EFECTO "PÍLDORA" EXACTO A LA IMAGEN
+       ========================================= */
     .tabs {
       display: flex;
       justify-content: center;
+      background-color: #f0f2f5;
+      /* Fondo gris claro del contenedor */
+      padding: 5px;
+      /* Espaciado interno para que el botón no toque los bordes */
+      border-radius: 8px;
+      /* Bordes redondeados del contenedor principal */
       margin: 0 auto 30px auto;
       width: fit-content;
-      border-radius: 4px;
-      overflow: hidden;
+      gap: 2px;
     }
 
     .tab-btn {
-      padding: 10px;
+      padding: 8px 10px;
       border: none;
-      background: #f0f0f0;
+      background: transparent;
+      /* Transparente para que se vea el fondo del contenedor */
       color: #7f8c8d;
       cursor: pointer;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       font-weight: 700;
-      transition: 0.3s;
-      width: 140px;
-      height: 45px;
+      transition: all 0.3s ease;
+      border-radius: 6px;
+      /* Bordes redondeados del botón individual */
+      width: 110px;
+      height: 50px;
       display: flex;
       align-items: center;
       justify-content: center;
+      line-height: 1.2;
+      text-align: center;
     }
 
     .tab-btn.active {
       background-color: var(--navy-blue);
       color: white;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      /* Sombra sutil para dar profundidad */
     }
 
-    /* 3. BALANCE Y GRÁFICO */
+    /* =========================================
+       3. BALANCE Y GRÁFICO
+       ========================================= */
     #balance-container h1:first-child {
       font-size: 2rem;
       margin: 0;
@@ -137,7 +154,9 @@
       background-color: var(--danger-red);
     }
 
-    /* 4. LISTA DE HISTORIAL */
+    /* =========================================
+       4. LISTA DE HISTORIAL
+       ========================================= */
     h3 {
       font-size: 0.85rem;
       border-bottom: 1px solid #444;
@@ -168,6 +187,19 @@
       font-size: 0.95rem;
     }
 
+    .list-item .details {
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+    }
+
+    .list-item .details small {
+      font-size: 0.7rem;
+      color: #7f8c8d;
+      font-weight: normal;
+      margin-top: 2px;
+    }
+
     .list-item.plus {
       border-right: 5px solid var(--success-green);
     }
@@ -193,7 +225,9 @@
       font-weight: bold;
     }
 
-    /* 5. FORMULARIO */
+    /* =========================================
+       5. FORMULARIO Y FOOTER
+       ========================================= */
     .form-control {
       text-align: left;
       margin-bottom: 15px;
@@ -206,7 +240,8 @@
       font-weight: 500;
     }
 
-    .form-control input {
+    .form-control input,
+    .form-control select {
       width: 100%;
       padding: 12px;
       border: 1px solid #dedede;
@@ -233,6 +268,15 @@
     .btn-submit:hover {
       background-color: #002244;
     }
+
+    .footer {
+      background-color: #111827;
+      color: #ffffff;
+      text-align: center;
+      padding: 1.5rem;
+      width: 100%;
+      margin-top: auto;
+    }
   </style>
 </head>
 
@@ -241,10 +285,11 @@
     <div class="app-wrapper">
       <div class="container">
 
-        <!-- COMPONENTE: PESTAÑAS (TABS) -->
+        <!-- COMPONENTE: PESTAÑAS (Efecto Píldora) -->
         <div class="tabs">
-          <button id="tab-summary" class="tab-btn active" data-tab="summary">Nueva Transacción</button>
-          <button id="tab-history" class="tab-btn" data-tab="history">Historial</button>
+          <button id="tab-summary" class="tab-btn active" data-tab="summary">Nueva<br>Transacción</button>
+          <button id="tab-session" class="tab-btn" data-tab="session">Sesión<br>Actual</button>
+          <button id="tab-history" class="tab-btn" data-tab="history">Historial<br>Global</button>
         </div>
 
         <!-- COMPONENTE: BALANCE -->
@@ -270,13 +315,12 @@
           </div>
         </div>
 
-        <!-- LÓGICA ISSUE 4: COMPONENTE: ALERTA DE PRESUPUESTO -->
         <div id="budget-warning"
           style="display: none; background-color: #fadbd8; color: #721c24; border: 1px solid #c0392b; padding: 10px; border-radius: 2px; margin-bottom: 20px; font-weight: bold; font-size: 0.9rem;">
           ¡Cuidado! Has excedido tu presupuesto disponible
         </div>
 
-        <!-- SECCIÓN: FORMULARIO -->
+        <!-- SECCIÓN 1: FORMULARIO -->
         <div id="section-summary" class="tab-content">
           <h3>Agregar nueva transacción</h3>
           <form id="form">
@@ -286,30 +330,75 @@
             </div>
 
             <div class="form-control">
+              <label for="date">Fecha</label>
+              <input type="date" id="date" required />
+            </div>
+
+            <div class="form-control">
+              <label for="category">Categoría</label>
+              <select id="category" required>
+                <optgroup label="Ingresos">
+                  <option value="Salario">Salario</option>
+                  <option value="Ventas">Ventas</option>
+                  <option value="Inversiones">Inversiones</option>
+                  <option value="Regalos">Regalos</option>
+                </optgroup>
+                <optgroup label="Gastos">
+                  <option value="Vivienda">Vivienda</option>
+                  <option value="Alimentos">Alimentos</option>
+                  <option value="Transporte">Transporte</option>
+                  <option value="Servicios">Servicios</option>
+                  <option value="Entretenimiento">Entretenimiento</option>
+                  <option value="Salud">Salud</option>
+                  <option value="Educación">Educación</option>
+                  <option value="Tecnología">Tecnología</option>
+                  <option value="Ahorro">Ahorro</option>
+                  <option value="Otros" selected>Otros</option>
+                </optgroup>
+              </select>
+            </div>
+
+            <div class="form-control">
               <label for="amount">Monto ($) <br /><small style="color: #aaa;">Tip: Usa números positivos para ingresos y
                   negativos para gastos</small></label>
               <input type="number" id="amount" placeholder="Introduce cantidad..." step="0.01" required />
             </div>
             <button class="btn-submit">Realizar transacción</button>
-
-            <!-- LÓGICA ISSUE 4: MENSAJE DE ÉXITO -->
             <p id="msg"
               style="color: var(--success-green); font-weight: bold; font-size: 0.9rem; margin-top: 15px; text-align: center; min-height: 20px;">
             </p>
           </form>
         </div>
 
-        <!-- SECCIÓN: HISTORIAL -->
+        <!-- SECCIÓN 2: SESIÓN ACTUAL -->
+        <div id="section-session" class="tab-content" style="display: none;">
+          <div
+            style="background-color: #e8f6f3; color: #0e6251; border: 1px solid #1abc9c; padding: 10px; border-radius: 2px; margin-bottom: 15px; font-size: 0.85rem; font-weight: bold;">
+            Listado temporal: Se borrará al recargar la página
+          </div>
+          <h3>Historial Sesión</h3>
+          <ul id="list-session" class="list"></ul>
+        </div>
+
+        <!-- SECCIÓN 3: HISTORIAL GLOBAL -->
         <div id="section-history" class="tab-content" style="display: none;">
-          <h3>Historial</h3>
+          <h3>Historial Global</h3>
           <ul id="list-global" class="list"></ul>
         </div>
 
       </div>
+
+      <!-- FOOTER -->
+      <footer class="footer">
+        <p style="margin: 0 0 10px 0; font-size: 0.9rem;">&copy; 2026 WebApp. All rights reserved.</p>
+        <div style="display: flex; justify-content: center; gap: 15px;">
+          <a href="#" style="color: #fff; text-decoration: none; font-size: 0.9rem;">Facebook</a>
+          <a href="#" style="color: #fff; text-decoration: none; font-size: 0.9rem;">Instagram</a>
+        </div>
+      </footer>
     </div>
   </div>
 
-  <!-- Scripts modulares -->
   <script src="js/Store.js"></script>
   <script src="js/UI.js"></script>
   <script src="js/App.js"></script>
