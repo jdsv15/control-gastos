@@ -4,11 +4,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Control de Gastos - Issue 3</title>
+  <title>Control de Gastos - Final</title>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
+    /* VARIABLES Y RESET */
     :root {
       font-family: 'Inter', system-ui, sans-serif;
       color-scheme: dark;
@@ -48,18 +49,13 @@
       flex: 1;
     }
 
-    /* =========================================
-       2. PESTAÑAS (TABS) - EFECTO "PÍLDORA" EXACTO A LA IMAGEN
-       ========================================= */
+    /* PESTAÑAS (Efecto Píldora) */
     .tabs {
       display: flex;
       justify-content: center;
       background-color: #f0f2f5;
-      /* Fondo gris claro del contenedor */
       padding: 5px;
-      /* Espaciado interno para que el botón no toque los bordes */
       border-radius: 8px;
-      /* Bordes redondeados del contenedor principal */
       margin: 0 auto 30px auto;
       width: fit-content;
       gap: 2px;
@@ -69,14 +65,12 @@
       padding: 8px 10px;
       border: none;
       background: transparent;
-      /* Transparente para que se vea el fondo del contenedor */
       color: #7f8c8d;
       cursor: pointer;
       font-size: 0.8rem;
       font-weight: 700;
       transition: all 0.3s ease;
       border-radius: 6px;
-      /* Bordes redondeados del botón individual */
       width: 110px;
       height: 50px;
       display: flex;
@@ -90,12 +84,9 @@
       background-color: var(--navy-blue);
       color: white;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      /* Sombra sutil para dar profundidad */
     }
 
-    /* =========================================
-       3. BALANCE Y GRÁFICO
-       ========================================= */
+    /* BALANCE Y GRÁFICO */
     #balance-container h1:first-child {
       font-size: 2rem;
       margin: 0;
@@ -105,7 +96,7 @@
 
     #balance-amount {
       font-size: 3rem;
-      margin: 10px 0 20px 0;
+      margin: 10px 0 15px 0;
       font-weight: 700;
       transition: color 0.3s;
     }
@@ -115,7 +106,7 @@
       flex-direction: column;
       align-items: center;
       width: 100%;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
     }
 
     .chart-wrapper {
@@ -154,9 +145,7 @@
       background-color: var(--danger-red);
     }
 
-    /* =========================================
-       4. LISTA DE HISTORIAL
-       ========================================= */
+    /* LISTA DE HISTORIAL */
     h3 {
       font-size: 0.85rem;
       border-bottom: 1px solid #444;
@@ -225,9 +214,7 @@
       font-weight: bold;
     }
 
-    /* =========================================
-       5. FORMULARIO Y FOOTER
-       ========================================= */
+    /* FORMULARIO Y FOOTER */
     .form-control {
       text-align: left;
       margin-bottom: 15px;
@@ -285,7 +272,7 @@
     <div class="app-wrapper">
       <div class="container">
 
-        <!-- COMPONENTE: PESTAÑAS (Efecto Píldora) -->
+        <!-- COMPONENTE: PESTAÑAS -->
         <div class="tabs">
           <button id="tab-summary" class="tab-btn active" data-tab="summary">Nueva<br>Transacción</button>
           <button id="tab-session" class="tab-btn" data-tab="session">Sesión<br>Actual</button>
@@ -296,25 +283,55 @@
         <div id="balance-container">
           <h1>Tu Balance</h1>
           <h1 id="balance-amount">$0</h1>
+
+          <!-- AJUSTE 1: FILTRO MOVIDO A NIVEL GLOBAL -->
+          <select id="filter-category"
+            style="margin: 0 auto 25px auto; display: block; width: 100%; max-width: 250px; padding: 10px; background-color: #34495e; color: white; border: none; border-radius: 4px; font-size: 0.9rem; cursor: pointer;">
+            <option value="Todas">Mostrar: Todas las Categorías</option>
+            <optgroup label="Ingresos">
+              <option value="Salario">Salario</option>
+              <option value="Ventas">Ventas</option>
+              <option value="Inversiones">Inversiones</option>
+              <option value="Regalos">Regalos</option>
+            </optgroup>
+            <optgroup label="Gastos">
+              <option value="Vivienda">Vivienda</option>
+              <option value="Alimentos">Alimentos</option>
+              <option value="Transporte">Transporte</option>
+              <option value="Servicios">Servicios</option>
+              <option value="Entretenimiento">Entretenimiento</option>
+              <option value="Salud">Salud</option>
+              <option value="Educación">Educación</option>
+              <option value="Tecnología">Tecnología</option>
+              <option value="Ahorro">Ahorro</option>
+              <option value="Otros">Otros</option>
+            </optgroup>
+          </select>
         </div>
 
-        <!-- COMPONENTE: GRÁFICO DE BARRAS HORIZONTAL -->
+        <!-- COMPONENTE: GRÁFICO -->
         <div id="chart-container">
           <div class="chart-wrapper">
             <canvas id="expense-chart"></canvas>
           </div>
           <div class="chart-legend">
             <div class="legend-item">
-              <div class="legend-color legend-income"></div>
-              <span>Ingresos</span>
+              <div class="legend-color legend-income"></div><span>Ingresos</span>
             </div>
             <div class="legend-item">
-              <div class="legend-color legend-expense"></div>
-              <span>Gastos</span>
+              <div class="legend-color legend-expense"></div><span>Gastos</span>
             </div>
           </div>
         </div>
 
+        <!-- AJUSTE 2: PANEL DE MÁXIMOS SIMPLIFICADO -->
+        <div
+          style="display: flex; justify-content: space-around; width: 100%; max-width: 350px; margin: 0 auto 25px auto; font-size: 0.9rem; font-weight: bold;">
+          <div style="color: var(--success-green);">Max Ingreso: <span id="max-income">$0.00</span></div>
+          <div style="color: var(--danger-red);">Max Gasto: <span id="max-expense">$0.00</span></div>
+        </div>
+
+        <!-- ALERTA DE PRESUPUESTO -->
         <div id="budget-warning"
           style="display: none; background-color: #fadbd8; color: #721c24; border: 1px solid #c0392b; padding: 10px; border-radius: 2px; margin-bottom: 20px; font-weight: bold; font-size: 0.9rem;">
           ¡Cuidado! Has excedido tu presupuesto disponible
@@ -328,12 +345,10 @@
               <label for="text">Descripción de la transacción</label>
               <input type="text" id="text" placeholder="Ej: Sueldo, Venta, Comida..." required />
             </div>
-
             <div class="form-control">
               <label for="date">Fecha</label>
               <input type="date" id="date" required />
             </div>
-
             <div class="form-control">
               <label for="category">Categoría</label>
               <select id="category" required>
@@ -357,10 +372,9 @@
                 </optgroup>
               </select>
             </div>
-
             <div class="form-control">
-              <label for="amount">Monto ($) <br /><small style="color: #aaa;">Tip: Usa números positivos para ingresos y
-                  negativos para gastos</small></label>
+              <label for="amount">Monto ($) <br /><small style="color: #aaa;">Tip: Positivos para ingresos, negativos
+                  para gastos</small></label>
               <input type="number" id="amount" placeholder="Introduce cantidad..." step="0.01" required />
             </div>
             <button class="btn-submit">Realizar transacción</button>
