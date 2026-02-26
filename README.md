@@ -39,3 +39,4 @@ css/: Estilos y diseño visual responsivo.
 js/: Lógica de la aplicación dividida en controladores independientes (Store.js para almacenamiento, UI.js para la interfaz y App.js para la inicialización y eventos).
 
 index.html: Estructura principal de la aplicación, formularios y contenedores de gráficos.
+>>>>>>> app-gastos

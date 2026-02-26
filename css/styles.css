@@ -1,12 +1,16 @@
-/* Clase Styles: Controla los colores, tamaños y la apariencia visual de toda la pagina, 
-para que se vea moderna y adaptable. */
+/* styles.css
+   Clase Styles: Controla los colores, tamaños y la apariencia visual
+   para que la página se vea moderna y adaptable.
+*/
 
-/* VARIABLES Y RESET GLOBAL */
+/* VARIABLES Y RESET GLOBAL*/
+
 :root {
     font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
     line-height: 1.5;
     font-weight: 400;
 
+    /* Tema por defecto (modo oscuro por diseño del proyecto) */
     color-scheme: light dark;
     color: rgba(255, 255, 255, 0.87);
     background-color: #242424;
@@ -16,13 +20,18 @@ para que se vea moderna y adaptable. */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 
-    /* Sombra estándar para tarjetas y botones */
+    /* Colores de sistema */
+    --navy-blue: #003366;
+    --danger-red: #e74c3c;
+    --success-green: #2ecc71;
     --box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
 }
 
+/* Reset / base */
 * {
     box-sizing: border-box;
-    /* Manejo intuitivo del modelo de caja */
+    margin: 0;
+    padding: 0;
 }
 
 /* ESTRUCTURA Y LAYOUT */
@@ -31,15 +40,16 @@ body {
     display: flex;
     flex-direction: column;
     place-items: center;
-    /* Centrado horizontal y vertical */
     min-width: 320px;
     min-height: 100vh;
+    background-color: var(--background, #242424); /* fallback */
+    color: var(--text-color, rgba(255,255,255,0.87));
+    -webkit-font-smoothing: antialiased;
 }
 
 #root {
     width: 100%;
-    max-width: 400px;
-    /* Ancho máximo estilo móvil */
+    max-width: 500px; /* mantuve 500 para tu HTML */
     margin: 0 auto;
     padding: 2rem;
     text-align: center;
@@ -48,14 +58,16 @@ body {
 /* TIPOGRAFÍA */
 h1 {
     margin-bottom: 20px;
-    font-size: 3.2em;
+    font-size: 2rem;
     line-height: 1.1;
 }
 
 h3 {
-    border-bottom: 1px solid #bbb;
+    border-bottom: 1px solid #444;
     padding-bottom: 10px;
-    margin: 40px 0 10px;
+    margin: 20px 0 15px;
+    color: inherit;
+    font-weight: 700;
 }
 
 h4 {
@@ -66,37 +78,194 @@ h4 {
 a {
     font-weight: 500;
     color: #646cff;
-    text-decoration: inherit;
+    text-decoration: none;
 }
 
 a:hover {
     color: #535bf2;
 }
 
-/* COMPONENTES DE FORMULARIO */
-.form-control {
-    margin: 10px 0;
+/* COMPONENTES: TABS (PESTAÑAS) */
+.tabs {
+    display: flex;
+    justify-content: center;
+    background-color: #f0f2f5;
+    padding: 5px;
+    border-radius: 8px;
+    margin: 0 auto 30px auto;
+    width: fit-content;
+    gap: 2px;
+}
+
+.tab-btn {
+    padding: 8px 10px;
+    border: none;
+    background: transparent;
+    color: #7f8c8d;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    border-radius: 6px;
+    width: 110px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.2;
+    text-align: center;
+}
+
+.tab-btn.active {
+    background-color: var(--navy-blue);
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* BALANCE Y GRÁFICO */
+#balance-container h1:first-child {
+    font-size: 1.5rem;
+    margin: 0;
+    color: #fff;
+    font-weight: 700;
+}
+
+#balance-amount {
+    font-size: 2.5rem;
+    margin: 10px 0 15px 0;
+    font-weight: 700;
+    transition: color 0.3s;
+}
+
+#chart-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.chart-wrapper {
+    width: 100%;
+    max-width: 300px;
+    height: 30px;
+    margin-bottom: 15px;
+}
+
+.chart-legend {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    font-size: 0.8rem;
+    color: #fff;
+    font-weight: bold;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.legend-color {
+    width: 25px;
+    height: 8px;
+    border-radius: 2px;
+}
+
+.legend-income {
+    background-color: var(--success-green);
+}
+
+.legend-expense {
+    background-color: var(--danger-red);
+}
+
+/* LISTA DE HISTORIAL */
+.list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 40px 0;
+}
+
+.list-item,
+.list li {
+    background: #fff;
+    color: #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    position: relative;
+    font-weight: 600;
+    font-size: 0.95rem;
+    box-shadow: var(--box-shadow);
+}
+
+.list-item .details {
+    display: flex;
+    flex-direction: column;
     text-align: left;
 }
 
-.form-control label {
-    display: inline-block;
-    margin: 10px 0;
+.list-item .details small {
+    font-size: 0.7rem;
+    color: #7f8c8d;
+    font-weight: normal;
+    margin-top: 2px;
 }
 
-.form-control input {
+.list-item.plus {
+    border-right: 5px solid var(--success-green);
+}
+
+.list-item.minus {
+    border-right: 5px solid var(--danger-red);
+}
+
+.delete-btn {
+    position: absolute;
+    left: -28px;
+    background-color: var(--danger-red);
+    color: white;
+    border: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 2px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+/* FORMULARIO Y BOTONES */
+.form-control {
+    text-align: left;
+    margin-bottom: 15px;
+}
+
+.form-control label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.form-control input,
+.form-control select {
+    width: 100%;
+    padding: 12px;
     border: 1px solid #dedede;
     border-radius: 2px;
-    display: block;
-    font-size: 16px;
-    padding: 10px;
-    width: 100%;
-    background-color: #fff;
+    background: #fff;
     color: #000;
-    box-sizing: border-box;
+    font-size: 0.95rem;
 }
 
-/* BOTONES */
 button {
     border-radius: 8px;
     border: 1px solid transparent;
@@ -119,9 +288,10 @@ button:focus-visible {
 }
 
 /* Botón Primario de Acción */
-.btn {
+.btn,
+.btn-submit {
     cursor: pointer;
-    background-color: #003366 !important;
+    background-color: var(--navy-blue) !important;
     box-shadow: var(--box-shadow);
     color: #ffffff !important;
     border: 0;
@@ -133,41 +303,35 @@ button:focus-visible {
     transition: background-color 0.3s ease;
 }
 
-.btn:hover {
+.btn:hover,
+.btn-submit:hover {
     background-color: #002244 !important;
 }
 
-/* LISTAS DE TRANSACCIONES */
-.list {
-    list-style-type: none;
-    padding: 0;
-    margin-bottom: 40px;
-}
-
-.list li {
-    background-color: #fff;
-    box-shadow: var(--box-shadow);
-    color: #333;
-    display: flex;
-    /* Flex para alinear texto izquierda y botón derecha */
-    justify-content: space-between;
-    position: relative;
+/* ALERTA DE PRESUPUESTO */
+#budget-warning {
+    display: none;
+    background-color: #fadbd8;
+    color: #721c24;
+    border: 1px solid #c0392b;
     padding: 10px;
-    margin: 10px 0;
+    border-radius: 2px;
+    margin-bottom: 20px;
+    font-weight: bold;
+    font-size: 0.9rem;
 }
 
-/* Indicadores visuales de tipo de transacción */
-.list li.plus {
-    border-right: 5px solid #2ecc71;
-    /* Verde ingreso */
+/* FOOTER */
+.footer {
+    background-color: #111827;
+    color: #ffffff;
+    text-align: center;
+    padding: 1.5rem;
+    width: 100%;
+    margin-top: auto;
 }
 
-.list li.minus {
-    border-right: 5px solid #c0392b;
-    /* Rojo gasto */
-}
-
-/* MEDIA QUERIES (MODO CLARO) */
+/* MEDIA QUERIES (PREFERENCIA MODO CLARO) */
 @media (prefers-color-scheme: light) {
     :root {
         color: #213547;
@@ -178,8 +342,14 @@ button:focus-visible {
         color: #747bff;
     }
 
-    /* Ajuste de botones default en fondo claro */
-    button:not(.btn) {
+    button:not(.btn):not(.btn-submit) {
         background-color: #f9f9f9;
+    }
+
+    /* Ajustes para listas en modo claro */
+    .list-item,
+    .list li {
+        background: #fff;
+        color: #333;
     }
 }
