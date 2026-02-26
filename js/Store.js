@@ -1,3 +1,6 @@
+// Clase Store: Maneja el almacenamiento local. 
+// Guarda, lee y elimina transacciones para que no se pierdan al recargar.
+
 class Store {
 
     // Obtener todas las transacciones almacenadas

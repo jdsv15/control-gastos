@@ -1,3 +1,6 @@
+/* Clase Styles: Controla los colores, tamaños y la apariencia visual de toda la pagina, 
+para que se vea moderna y adaptable. */
+
 /* VARIABLES Y RESET GLOBAL */
 :root {
     font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;

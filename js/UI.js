@@ -1,3 +1,6 @@
+// Clase UI: Controla la interfaz visual. 
+// Dibuja el grafico, actualiza los balances y modifica los elementos en la pantalla.
+
 class UI {
 
     // Instancia del gráfico para actualizarlo

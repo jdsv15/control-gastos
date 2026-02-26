@@ -1,9 +1,12 @@
-// --- Array para guardar transacciones de la sesión actual ---
+// Clase App: Es el controlador principal. 
+// Une los datos (Store) con lo visual (UI) y maneja los eventos de los botones y el formulario.
+
+// Array para guardar transacciones de la sesión actual 
 let sessionTransactions = [];
 
 class App {
 
-    // 2INICIALIZACIÓN DE LA APLICACIÓN
+    // INICIALIZACIÓN DE LA APLICACIÓN
     static init() {
 
         // Cargar transacciones aplicando el filtro seleccionado por defecto
